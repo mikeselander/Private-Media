@@ -12,6 +12,10 @@ class Utilities {
 
 	}
 
+	public static function get_hash() {
+		return hash( 'md5', AUTH_KEY );
+	}
+
 	/**
 	 * Set a reference to the main plugin instance.
 	 *
@@ -31,7 +35,7 @@ class Utilities {
 	 * @param  int $attachment_id
 	 * @return boolean
 	 */
-	function is_attachment_private( $attachment_id ) {
+	public function is_attachment_private( $attachment_id ) {
 
 		return get_post_meta( $attachment_id, 'mphpf_is_private', true );
 
@@ -46,17 +50,19 @@ class Utilities {
 	 * @param  int $user_id (if not passed, assumed current user)
 	 * @return boolean
 	 */
-	function can_user_view( $attachment_id, $user_id = null ) {
+	public function can_user_view( $attachment_id, $user_id = null ) {
 
 		$user_id = ( $user_id ) ? $user_id : get_current_user_id();
 
-		if ( ! $attachment_id )
+		if ( ! $attachment_id ) {
 			return false;
+		}
 
 		$private_status = $this->is_attachment_private( $attachment_id );
 
-		if ( ! empty( $private_status ) && ! is_user_logged_in() )
+		if ( ! empty( $private_status ) && ! is_user_logged_in() ) {
 			return false;
+		}
 
 		return true;
 
@@ -69,14 +75,19 @@ class Utilities {
 	 * @param  array $atts shortcode attributes
 	 * @return string shortcode output.
 	 */
-	function get_private_url($atts) {
+	public function get_private_url( $atts ) {
 
-		if ( $this->is_attachment_private( $atts['id'] ) && ! is_user_logged_in() )
+		if ( $this->is_attachment_private( $atts['id'] ) && ! is_user_logged_in() ){
 			$link = 'You must be logged in to access this file.';
-		elseif ( isset( $atts['attachment_page'] ) )
+		} elseif ( isset( $atts['attachment_page'] ) ) {
 			$link = wp_get_attachment_link( $atts['id'] );
-		else
-			$link = sprintf( '<a href="%s">%s</a>', esc_url( wp_get_attachment_url( $atts['id'] ) ), esc_html( basename( wp_get_attachment_url( $atts['id'] ) ) ) );
+		} else {
+			$link = sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( wp_get_attachment_url( $atts['id'] ) ),
+				esc_html( basename( wp_get_attachment_url( $atts['id'] ) ) )
+			);
+		}
 
 		return $link;
 
@@ -89,18 +100,19 @@ class Utilities {
 	 * @param  [type] $attachment [description]
 	 * @return [type]             [description]
 	 */
-	function get_attachment_id_from_name( $attachment ) {
+	public function get_attachment_id_from_name( $attachment ) {
 
 		$attachment_post = new WP_Query( array(
-			'post_type' => 'attachment',
-			'showposts' => 1,
-			'post_status' => 'inherit',
-			'name' => $attachment,
+			'post_type'    => 'attachment',
+			'showposts'    => 1,
+			'post_status'  => 'inherit',
+			'name'         => $attachment,
 			'show_private' => true
 		) );
 
-		if ( empty( $attachment_post->posts ) )
+		if ( empty( $attachment_post->posts ) ) {
 			return;
+		}
 
 		return reset( $attachment_post->posts )->ID;
 

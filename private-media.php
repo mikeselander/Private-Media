@@ -13,10 +13,6 @@
 
 namespace PrivateMedia;
 
-// Hash for obscuring upload dir.
-// An extra level of security but a little bit of a hassle.
-define( 'MPHPF_KEY', hash( 'md5', AUTH_KEY ) );
-
 /**
  * Autoloader callback.
  *

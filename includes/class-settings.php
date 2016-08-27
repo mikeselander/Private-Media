@@ -3,6 +3,13 @@ namespace PrivateMedia;
 
 class Settings {
 
+	private $hash;
+
+	public function __construct() {
+		$this->hash = Utilities::get_hash();
+		$this->utilities = new Utilities;
+	}
+
 	/**
 	 * Instantiate any WP hooks that need to be fired.
 	 */
@@ -12,7 +19,7 @@ class Settings {
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'private_attachment_field' ) , 11 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'private_attachment_field_save' ), 10, 2 );
 		add_filter( 'restrict_manage_posts', array( $this, 'filter_posts_toggle' ) );
-		
+
 		// Styles
 		add_action( 'admin_head', array( $this, 'post_edit_style' ) );
 
@@ -38,7 +45,7 @@ class Settings {
 	 */
 	function private_attachment_field() {
 
-		$is_private = $this->is_attachment_private( get_the_id() );
+		$is_private = $this->utilities->is_attachment_private( get_the_id() );
 
 		?>
 		<div class="misc-pub-section">
@@ -82,48 +89,53 @@ class Settings {
 			if ( $make_private ) {
 
 				$old_location = get_post_meta( $post['ID'], '_wp_attached_file', true );
-				if ( $old_location && false === strpos( $old_location, 'private-files-' . MPHPF_KEY ) )
-					$new_location = 'private-files-' . MPHPF_KEY . '/' . $old_location;
+				if ( $old_location && false === strpos( $old_location, 'private-files-' . $this->hash ) )
+					$new_location = 'private-files-' . $this->hash . '/' . $old_location;
 
 			} else {
 
 				// Update location of file in meta.
 				$old_location = get_post_meta( $post['ID'], '_wp_attached_file', true );
-				if ( $old_location && false !== strpos( $old_location, 'private-files-' . MPHPF_KEY ) )
-					$new_location = str_replace( 'private-files-' . MPHPF_KEY . '/', '', $old_location );
+				if ( $old_location && false !== strpos( $old_location, 'private-files-' . $this->hash ) ){
+					$new_location = str_replace( 'private-files-' . $this->hash . '/', '', $old_location );
+				}
 
 			}
 
 			$metadata = get_post_meta( $post['ID'], '_wp_attachment_metadata', true );
 
-			if ( ! $new_location )
+			if ( ! $new_location ){
 				return $post;
+			}
 
 			$old_path = trailingslashit( $uploads['basedir'] ) . $old_location;
 			$new_path = trailingslashit( $uploads['basedir'] ) . $new_location;
 
 			// Create destination
-			if ( ! is_dir( dirname( $new_path ) ) )
+			if ( ! is_dir( dirname( $new_path ) ) ){
 				wp_mkdir_p( dirname( $new_path ) );
+			}
 
 			$move = $wp_filesystem->move( $old_path, $new_path );
 
-			if ( isset( $metadata['sizes'] ) )
+			if ( isset( $metadata['sizes'] ) ){
 				foreach ( $metadata['sizes'] as $key => $size ) {
 					$old_image_size_path = trailingslashit( dirname( $old_path ) ) . $size['file'];
 					$new_image_size_path = trailingslashit( dirname( $new_path ) ) . $size['file'];
 					$move = $wp_filesystem->move( $old_image_size_path, $new_image_size_path );
 				}
+			}
 
 
 			if ( ! $move ) {
 				// @todo handle errors.
 			}
 
-			if ( $make_private )
+			if ( $make_private ){
 				update_post_meta( $post['ID'], 'mphpf_is_private', true );
-			else
+			} else {
 				delete_post_meta( $post['ID'], 'mphpf_is_private' );
+			}
 
 			update_post_meta( $post['ID'], '_wp_attached_file', $new_location );
 
@@ -166,7 +178,7 @@ class Settings {
 		$icon_url = trailingslashit( plugin_dir_url( __FILE__ ) ) . 'assets/icon_lock.png';
 		$icon_url_2x = trailingslashit( plugin_dir_url( __FILE__ ) ) . 'assets/icon_lock@2x.png';
 
-		if ( is_admin() && 'attachment' == get_current_screen()->id && $this->is_attachment_private( get_the_id() ) ) : ?>
+		if ( is_admin() && 'attachment' == get_current_screen()->id && $this->utilities->is_attachment_private( get_the_id() ) ) : ?>
 
 			<style>
 				#titlediv { padding-left: 60px; }

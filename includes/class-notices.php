@@ -3,41 +3,21 @@ namespace PrivateMedia;
 
 class Notices {
 
-	/**
-	 * Instantiate any WP hooks that need to be fired.
-	 */
-	public function hooks(){
-
-
-
-	}
-
-	/**
-	 * Set a reference to the main plugin instance.
-	 *
-	 * @param $plugin Plugin instance.
-	 * @return Database instance
-	 */
-	public function set_plugin( $plugin ) {
-
-		$this->plugin = $plugin;
-		return $this;
-
-	}
-
 	private $ID;
 
 	function __construct( $ID = 'mph' ) {
 
 		$this->ID = 'mphan_' . $ID;
 
-		if ( ! get_option( $this->ID ) )
+		if ( ! get_option( $this->ID ) ) {
 			add_option( $this->ID, array(), null, 'no' );
-		else
+		} else {
 			$this->admin_notices = get_option( $this->ID, array() );
+		}
 
-		if ( isset( $_GET[ $this->ID . '_notice_dismiss' ] ) || isset( $_GET['_wpnonce'] ) )
+		if ( isset( $_GET[ $this->ID . '_notice_dismiss' ] ) || isset( $_GET['_wpnonce'] ) ) {
 			add_action( 'admin_init', array( $this, 'delete_notice_action' ) );
+		}
 
 		add_action( 'admin_notices', array( $this, 'display_admin_notices' ) );
 
@@ -60,8 +40,9 @@ class Notices {
 			'display_once' => $display_once
 		);
 
-		if ( ! in_array( $notice , $this->admin_notices ) )
+		if ( ! in_array( $notice , $this->admin_notices ) ) {
 			$this->admin_notices[uniqid()] = $notice;
+		}
 
 	}
 
@@ -98,8 +79,9 @@ class Notices {
 	 */
 	private function display_admin_notice ( $notice_id ) {
 
-		if ( ! $notice = $this->admin_notices[$notice_id] )
+		if ( ! $notice = $this->admin_notices[$notice_id] ) {
 			return;
+		}
 
 		?>
 
@@ -119,8 +101,9 @@ class Notices {
 
 		<?php
 
-		if ( $notice['display_once'] )
+		if ( $notice['display_once'] ) {
 			$this->unset_admin_notice( $notice_id );
+		}
 
 	}
 
@@ -132,8 +115,9 @@ class Notices {
 	 */
 	private function unset_admin_notice( $notice_id ) {
 
-		if ( array_key_exists( $notice_id, $this->admin_notices ) )
+		if ( array_key_exists( $notice_id, $this->admin_notices ) ) {
 			unset( $this->admin_notices[$notice_id] );
+		}
 
 	}
 
@@ -149,8 +133,9 @@ class Notices {
 	 */
 	public function delete_notice_action() {
 
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], $this->ID . '_notice_dismiss' ) )
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'], $this->ID . '_notice_dismiss' ) ) {
 			return;
+		}
 
 		$this->unset_admin_notice( $_GET[$this->ID . '_notice_dismiss'] );
 

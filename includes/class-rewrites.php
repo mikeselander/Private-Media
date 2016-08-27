@@ -3,6 +3,12 @@ namespace PrivateMedia;
 
 class Rewrites {
 
+	private $utilities;
+
+	public function __construct() {
+		$this->utilities = new Utilities;
+	}
+
 	/**
 	 * Instantiate any WP hooks that need to be fired.
 	 */
@@ -40,12 +46,13 @@ class Rewrites {
 	 */
 	function mphpf_get_private_dir( $path = false ) {
 
-		$dirname = 'private-files-' . MPHPF_KEY;
+		$dirname = 'private-files-' . Utilities::get_hash();
 		$upload_dir = wp_upload_dir();
 
 		// Maybe create the directory.
-		if ( ! is_dir( trailingslashit( $upload_dir['basedir'] ) . $dirname ) )
+		if ( ! is_dir( trailingslashit( $upload_dir['basedir'] ) . $dirname ) ){
 			wp_mkdir_p( trailingslashit( $upload_dir['basedir'] ) . $dirname );
+		}
 
 		$htaccess = trailingslashit( $upload_dir['basedir'] ) . $dirname . '/.htaccess';
 
@@ -58,8 +65,9 @@ class Rewrites {
 
 		}
 
-		if ( $path )
+		if ( $path ) {
 			return trailingslashit( $upload_dir['basedir'] ) . $dirname;
+		}
 
 		return trailingslashit( $upload_dir['baseurl'] ) . $dirname;
 
@@ -78,28 +86,33 @@ class Rewrites {
 
 	function rewrite_callback( $wp ) {
 
-		if ( ! empty( $wp->query_vars['file_id'] ) )
+		if ( ! empty( $wp->query_vars['file_id'] ) ){
 			$file_id = $wp->query_vars['file_id'];
+		}
 
-		if ( ! empty( $wp->query_vars['file_name'] ) )
+		if ( ! empty( $wp->query_vars['file_name'] ) ) {
 			$file_name = $wp->query_vars['file_name'];
+		}
 
 		// Legagcy
 		if ( empty( $file_id ) ) {
  			preg_match( "#(&|^)file_id=([^&$]+)#", $wp->matched_query, $file_id_matches );
- 			if ( $file_id_matches )
+ 			if ( $file_id_matches ){
  				$file_id = $file_id_matches[2];
+			}
 			preg_match( "#(&|^)file_name=([^&$]+)#", $wp->matched_query, $file_name_matches );
 				$file_name = $file_name_matches[2];
 		}
 
-		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) )
+		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) ){
 			$this->auth_redirect();
+		}
 
 		$wp_attached_file = get_post_meta( $file_id, '_wp_attached_file', true );
 
-		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) )
+		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ){
 			$this->auth_redirect();
+		}
 
 		$uploads = wp_upload_dir();
 		$file_path = trailingslashit( $uploads['basedir'] ) . $wp_attached_file;
@@ -129,8 +142,9 @@ class Rewrites {
 
 			$attachment = ( $query->get( 'attachment_id') ) ? $query->get( 'attachment_id') : $query->get( 'attachment');
 
-			if ( $attachment && ! is_numeric( $attachment ) )
+			if ( $attachment && ! is_numeric( $attachment ) ) {
 				$attachment = $this->get_attachment_id_from_name( $attachment );
+			}
 
 			if ( $attachment && ! $this->can_user_view( $attachment ) ) {
 
@@ -143,21 +157,21 @@ class Rewrites {
 
 		if ( 'attachment' == $query->get('post_type') && ! $query->get('show_private') ) {
 
-			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  )
+			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  ){
 				$query->set( 'meta_query', array(
 					array(
 						'key'   => 'mphpf_is_private',
 						'compare' => 'EXISTS'
 					)
 				));
-			else
+			} else {
 				$query->set( 'meta_query', array(
 					array(
 						'key'   => 'mphpf_is_private',
 						'compare' => 'NOT EXISTS'
 					)
 				));
-
+			}
 		}
 
 		return $query;
@@ -175,7 +189,7 @@ class Rewrites {
 	 */
 	function private_file_url( $url, $attachment_id ) {
 
-		if ( $this->is_attachment_private( $attachment_id ) ) {
+		if ( $this->utilities->is_attachment_private( $attachment_id ) ) {
 
 			$uploads = wp_upload_dir();
 			return trailingslashit( $uploads['baseurl'] ) . 'private-files/' . $attachment_id . '/' . basename($url);
