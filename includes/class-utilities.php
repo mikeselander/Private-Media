@@ -3,30 +3,17 @@ namespace PrivateMedia;
 
 class Utilities {
 
-	/**
-	 * Instantiate any WP hooks that need to be fired.
-	 */
-	public function hooks(){
+	private $plugin;
+	private $slug;
+	private static $static_slug;
 
-
-
+	public function __construct() {
+		$this->slug = plugin()->get_definitions()->slug;
+		self::$static_slug = $this->slug;
 	}
 
 	public static function get_hash() {
-		return hash( 'md5', AUTH_KEY );
-	}
-
-	/**
-	 * Set a reference to the main plugin instance.
-	 *
-	 * @param $plugin Plugin instance.
-	 * @return Database instance
-	 */
-	public function set_plugin( $plugin ) {
-
-		$this->plugin = $plugin;
-		return $this;
-
+		return apply_filters( self::$static_slug . '_hash', hash( 'md5', AUTH_KEY ) );
 	}
 
 	/**
@@ -37,7 +24,7 @@ class Utilities {
 	 */
 	public function is_attachment_private( $attachment_id ) {
 
-		return get_post_meta( $attachment_id, 'mphpf_is_private', true );
+		return get_post_meta( $attachment_id, $this->slug . '_is_private', true );
 
 	}
 

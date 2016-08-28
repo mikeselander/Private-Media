@@ -4,6 +4,7 @@ namespace PrivateMedia;
 class Rewrites {
 
 	private $utilities;
+	private $slug;
 
 	public function __construct() {
 		$this->utilities = new Utilities;
@@ -32,6 +33,7 @@ class Rewrites {
 	public function set_plugin( $plugin ) {
 
 		$this->plugin = $plugin;
+		$this->slug   = $this->plugin->definitions->slug;
 		return $this;
 
 	}
@@ -44,7 +46,7 @@ class Rewrites {
 	 * @param  boolean $path return path not url.
 	 * @return string path or url
 	 */
-	function mphpf_get_private_dir( $path = false ) {
+	function get_private_dir( $path = false ) {
 
 		$dirname = 'private-files-' . Utilities::get_hash();
 		$upload_dir = wp_upload_dir();
@@ -61,7 +63,7 @@ class Rewrites {
 			$contents[]	= "# This .htaccess file ensures that other people cannot download your private files.\n\n";
 			$contents[] = "deny from all";
 
-			insert_with_markers( $htaccess, 'mphpf', $contents );
+			insert_with_markers( $htaccess, $this->slug, $contents );
 
 		}
 
@@ -105,13 +107,13 @@ class Rewrites {
 		}
 
 		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) ){
-			$this->auth_redirect();
+			auth_redirect();
 		}
 
 		$wp_attached_file = get_post_meta( $file_id, '_wp_attached_file', true );
 
 		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ){
-			$this->auth_redirect();
+			auth_redirect();
 		}
 
 		$uploads = wp_upload_dir();
@@ -160,14 +162,14 @@ class Rewrites {
 			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  ){
 				$query->set( 'meta_query', array(
 					array(
-						'key'   => 'mphpf_is_private',
+						'key'     => $this->slug . '_is_private',
 						'compare' => 'EXISTS'
 					)
 				));
 			} else {
 				$query->set( 'meta_query', array(
 					array(
-						'key'   => 'mphpf_is_private',
+						'key'     => $this->slug . '_is_private',
 						'compare' => 'NOT EXISTS'
 					)
 				));
@@ -197,17 +199,6 @@ class Rewrites {
 		}
 
 		return $url;
-
-	}
-
-	/**
-	 * Redirect if authentication is required.
-	 *
-	 * @return null
-	 */
-	function auth_redirect() {
-
-		auth_redirect();
 
 	}
 

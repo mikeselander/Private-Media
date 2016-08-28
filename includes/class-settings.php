@@ -4,10 +4,15 @@ namespace PrivateMedia;
 class Settings {
 
 	private $hash;
+	private $utilities;
+	private $rewrites;
+	private $plugin;
+	private $slug;
 
 	public function __construct() {
-		$this->hash = Utilities::get_hash();
+		$this->hash       = Utilities::get_hash();
 		$this->utilities = new Utilities;
+		$this->rewrites  = new Rewrites;
 	}
 
 	/**
@@ -34,6 +39,7 @@ class Settings {
 	public function set_plugin( $plugin ) {
 
 		$this->plugin = $plugin;
+		$this->slug   = $this->plugin->definitions->slug;
 		return $this;
 
 	}
@@ -49,7 +55,7 @@ class Settings {
 
 		?>
 		<div class="misc-pub-section">
-			<label for="mphpf2"><input type="checkbox" id="mphpf2" name="<?php echo $this->prefix; ?>_is_private" <?php checked( $is_private, true ); ?> style="margin-right: 5px;"/>
+			<label for="<?php echo esc_attr( $this->slug ); ?>"><input type="checkbox" id="<?php echo esc_attr( $this->slug ); ?>" name="<?php echo esc_attr( $this->slug ); ?>_is_private" <?php checked( $is_private, true ); ?> style="margin-right: 5px;"/>
 			Make this file private</label>
 		</div>
 		<?php
@@ -68,7 +74,7 @@ class Settings {
 		$uploads = wp_upload_dir();
 		$creds   = request_filesystem_credentials( add_query_arg( null, null ) );
 
-		$this->mphpf_get_private_dir( true );
+		$rewrites->get_private_dir( true );
 
 		if ( ! $creds ) {
 			// Handle Error.
@@ -132,9 +138,9 @@ class Settings {
 			}
 
 			if ( $make_private ){
-				update_post_meta( $post['ID'], 'mphpf_is_private', true );
+				update_post_meta( $post['ID'], $this->slug . '_is_private', true );
 			} else {
-				delete_post_meta( $post['ID'], 'mphpf_is_private' );
+				delete_post_meta( $post['ID'], $this->slug . '_is_private' );
 			}
 
 			update_post_meta( $post['ID'], '_wp_attached_file', $new_location );

@@ -78,5 +78,4 @@ function private_media_autoloader( $class ) {
 
  // Register hook providers.
  plugin()->register_hooks( new Rewrites() )
- 		 ->register_hooks( new Settings() )
-		 ->register_hooks( new Utilities() );
+ 		 ->register_hooks( new Settings() );
