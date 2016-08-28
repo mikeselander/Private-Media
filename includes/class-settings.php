@@ -59,7 +59,6 @@ class Settings {
 		// Is Private Checkbox.
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'private_attachment_field' ) , 11 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'private_attachment_field_save' ), 10, 2 );
-		add_filter( 'restrict_manage_posts', array( $this, 'filter_posts_toggle' ) );
 
 		// Styles.
 		add_action( 'admin_head', array( $this, 'post_edit_style' ) );
@@ -185,24 +184,6 @@ class Settings {
 		}
 
 		return $post;
-
-	}
-
-	/**
-	 * Output select field for filtering media by public/private.
-	 */
-	function filter_posts_toggle() {
-
-		$is_private_filter_on = isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts'];
-
-		?>
-
-		<select name="private_posts">
-			<option <?php selected( $is_private_filter_on, false ); ?> value="public">Public</option>
-			<option <?php selected( $is_private_filter_on, true ); ?> value="private">Private</option>
-		</select>
-
-		<?php
 
 	}
 
