@@ -35,13 +35,13 @@ class Notices {
 	public function add_notice( $message, $display_once = false, $type = 'updated' ) {
 
 		$notice = array(
-			'message' => $message,
-			'type' => $type,
+			'message'      => $message,
+			'type'         => $type,
 			'display_once' => $display_once
 		);
 
 		if ( ! in_array( $notice , $this->admin_notices ) ) {
-			$this->admin_notices[uniqid()] = $notice;
+			$this->admin_notices[ uniqid() ] = $notice;
 		}
 
 	}
@@ -66,8 +66,9 @@ class Notices {
 	public function display_admin_notices() {
 
 		// Display admin notices
-		foreach ( array_keys( $this->admin_notices ) as $notice_id )
+		foreach ( array_keys( $this->admin_notices ) as $notice_id ) {
 			$this->display_admin_notice( $notice_id );
+		}
 
 	}
 
@@ -79,7 +80,7 @@ class Notices {
 	 */
 	private function display_admin_notice ( $notice_id ) {
 
-		if ( ! $notice = $this->admin_notices[$notice_id] ) {
+		if ( ! $notice = $this->admin_notices[ $notice_id ] ) {
 			return;
 		}
 
@@ -89,7 +90,7 @@ class Notices {
 
 			<p>
 
-				<?php echo $notice['message']; ?>
+				<?php echo wp_kses_post( $notice['message'] ); ?>
 
 				<?php if ( empty( $notice['display_once'] ) ) : ?>
 					<a class="button" style="margin-left: 10px; color: inherit; text-decoration: none;" href="<?php echo wp_nonce_url( add_query_arg( $this->ID . '_notice_dismiss', $notice_id ), $this->ID . '_notice_dismiss' ); ?>">Dismiss</a>
@@ -116,7 +117,7 @@ class Notices {
 	private function unset_admin_notice( $notice_id ) {
 
 		if ( array_key_exists( $notice_id, $this->admin_notices ) ) {
-			unset( $this->admin_notices[$notice_id] );
+			unset( $this->admin_notices[ $notice_id ] );
 		}
 
 	}
@@ -137,7 +138,7 @@ class Notices {
 			return;
 		}
 
-		$this->unset_admin_notice( $_GET[$this->ID . '_notice_dismiss'] );
+		$this->unset_admin_notice( $_GET[ $this->ID . '_notice_dismiss' ] );
 
 	}
 

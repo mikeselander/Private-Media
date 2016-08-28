@@ -10,7 +10,7 @@ class Settings {
 	private $slug;
 
 	public function __construct() {
-		$this->hash       = Utilities::get_hash();
+		$this->hash      = Utilities::get_hash();
 		$this->utilities = new Utilities;
 		$this->rewrites  = new Rewrites;
 	}
@@ -18,7 +18,7 @@ class Settings {
 	/**
 	 * Instantiate any WP hooks that need to be fired.
 	 */
-	public function hooks(){
+	public function hooks() {
 
 		// Is Private Checkbox
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'private_attachment_field' ) , 11 );
@@ -88,7 +88,7 @@ class Settings {
 
 			global $wp_filesystem;
 
-			$make_private = isset( $_POST[$this->prefix .'_is_private'] ) && 'on' == $_POST[$this->prefix .'_is_private'];
+			$make_private = isset( $_POST[ $this->prefix .'_is_private' ] ) && 'on' == $_POST[ $this->prefix .'_is_private' ];
 
 			$new_location = null;
 
@@ -102,7 +102,7 @@ class Settings {
 
 				// Update location of file in meta.
 				$old_location = get_post_meta( $post['ID'], '_wp_attached_file', true );
-				if ( $old_location && false !== strpos( $old_location, 'private-files-' . $this->hash ) ){
+				if ( $old_location && false !== strpos( $old_location, 'private-files-' . $this->hash ) ) {
 					$new_location = str_replace( 'private-files-' . $this->hash . '/', '', $old_location );
 				}
 
@@ -110,7 +110,7 @@ class Settings {
 
 			$metadata = get_post_meta( $post['ID'], '_wp_attachment_metadata', true );
 
-			if ( ! $new_location ){
+			if ( ! $new_location ) {
 				return $post;
 			}
 
@@ -118,13 +118,13 @@ class Settings {
 			$new_path = trailingslashit( $uploads['basedir'] ) . $new_location;
 
 			// Create destination
-			if ( ! is_dir( dirname( $new_path ) ) ){
+			if ( ! is_dir( dirname( $new_path ) ) ) {
 				wp_mkdir_p( dirname( $new_path ) );
 			}
 
 			$move = $wp_filesystem->move( $old_path, $new_path );
 
-			if ( isset( $metadata['sizes'] ) ){
+			if ( isset( $metadata['sizes'] ) ) {
 				foreach ( $metadata['sizes'] as $key => $size ) {
 					$old_image_size_path = trailingslashit( dirname( $old_path ) ) . $size['file'];
 					$new_image_size_path = trailingslashit( dirname( $new_path ) ) . $size['file'];
@@ -132,12 +132,7 @@ class Settings {
 				}
 			}
 
-
-			if ( ! $move ) {
-				// @todo handle errors.
-			}
-
-			if ( $make_private ){
+			if ( $make_private ) {
 				update_post_meta( $post['ID'], $this->slug . '_is_private', true );
 			} else {
 				delete_post_meta( $post['ID'], $this->slug . '_is_private' );
@@ -188,9 +183,9 @@ class Settings {
 
 			<style>
 				#titlediv { padding-left: 60px; }
-				#titlediv::before { content: ' '; display: block; height: 26px; width: 21px; background: url(<?php echo $icon_url; ?>) no-repeat center center; position: relative; float: left; margin-left: -40px; top: 4px; }
+				#titlediv::before { content: ' '; display: block; height: 26px; width: 21px; background: url(<?php echo esc_url( $icon_url ); ?>) no-repeat center center; position: relative; float: left; margin-left: -40px; top: 4px; }
 				@media only screen and ( -webkit-min-device-pixel-ratio : 1.5 ), only screen and ( min-device-pixel-ratio : 1.5 ) {
-					#titlediv::before { background-image: url(<?php echo $icon_url_2x; ?>); }
+					#titlediv::before { background-image: url(<?php echo esc_url( $icon_url_2x ); ?>); }
 				}
 			</style>
 

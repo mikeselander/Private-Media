@@ -64,7 +64,7 @@ class Utilities {
 	 */
 	public function get_private_url( $atts ) {
 
-		if ( $this->is_attachment_private( $atts['id'] ) && ! is_user_logged_in() ){
+		if ( $this->is_attachment_private( $atts['id'] ) && ! is_user_logged_in() ) {
 			$link = 'You must be logged in to access this file.';
 		} elseif ( isset( $atts['attachment_page'] ) ) {
 			$link = wp_get_attachment_link( $atts['id'] );

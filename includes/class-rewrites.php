@@ -13,7 +13,7 @@ class Rewrites {
 	/**
 	 * Instantiate any WP hooks that need to be fired.
 	 */
-	public function hooks(){
+	public function hooks() {
 
 		add_action( 'init', array( $this, 'rewrite_rules' ) );
 		add_filter( 'wp_get_attachment_url', array( $this, 'private_file_url' ), 10, 2 );
@@ -52,7 +52,7 @@ class Rewrites {
 		$upload_dir = wp_upload_dir();
 
 		// Maybe create the directory.
-		if ( ! is_dir( trailingslashit( $upload_dir['basedir'] ) . $dirname ) ){
+		if ( ! is_dir( trailingslashit( $upload_dir['basedir'] ) . $dirname ) ) {
 			wp_mkdir_p( trailingslashit( $upload_dir['basedir'] ) . $dirname );
 		}
 
@@ -88,7 +88,7 @@ class Rewrites {
 
 	function rewrite_callback( $wp ) {
 
-		if ( ! empty( $wp->query_vars['file_id'] ) ){
+		if ( ! empty( $wp->query_vars['file_id'] ) ) {
 			$file_id = $wp->query_vars['file_id'];
 		}
 
@@ -99,20 +99,20 @@ class Rewrites {
 		// Legagcy
 		if ( empty( $file_id ) ) {
  			preg_match( "#(&|^)file_id=([^&$]+)#", $wp->matched_query, $file_id_matches );
- 			if ( $file_id_matches ){
+ 			if ( $file_id_matches ) {
  				$file_id = $file_id_matches[2];
 			}
 			preg_match( "#(&|^)file_name=([^&$]+)#", $wp->matched_query, $file_name_matches );
 				$file_name = $file_name_matches[2];
 		}
 
-		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) ){
+		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) ) {
 			auth_redirect();
 		}
 
 		$wp_attached_file = get_post_meta( $file_id, '_wp_attached_file', true );
 
-		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ){
+		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ) {
 			auth_redirect();
 		}
 
@@ -142,7 +142,7 @@ class Rewrites {
 
 		if ( ! is_admin() ) {
 
-			$attachment = ( $query->get( 'attachment_id') ) ? $query->get( 'attachment_id') : $query->get( 'attachment');
+			$attachment = ( $query->get( 'attachment_id' ) ) ? $query->get( 'attachment_id' ) : $query->get( 'attachment' );
 
 			if ( $attachment && ! is_numeric( $attachment ) ) {
 				$attachment = $this->get_attachment_id_from_name( $attachment );
@@ -157,9 +157,9 @@ class Rewrites {
 
 		}
 
-		if ( 'attachment' == $query->get('post_type') && ! $query->get('show_private') ) {
+		if ( 'attachment' == $query->get( 'post_type' ) && ! $query->get( 'show_private' ) ) {
 
-			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  ){
+			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  ) {
 				$query->set( 'meta_query', array(
 					array(
 						'key'     => $this->slug . '_is_private',
@@ -194,7 +194,7 @@ class Rewrites {
 		if ( $this->utilities->is_attachment_private( $attachment_id ) ) {
 
 			$uploads = wp_upload_dir();
-			return trailingslashit( $uploads['baseurl'] ) . 'private-files/' . $attachment_id . '/' . basename($url);
+			return trailingslashit( $uploads['baseurl'] ) . 'private-files/' . $attachment_id . '/' . basename( $url );
 
 		}
 
