@@ -37,9 +37,7 @@ class Utilities {
 	 * @param  int $user_id (if not passed, assumed current user)
 	 * @return boolean
 	 */
-	public function can_user_view( $attachment_id, $user_id = null ) {
-
-		$user_id = ( $user_id ) ? $user_id : get_current_user_id();
+	public function can_user_view( $attachment_id ) {
 
 		if ( ! $attachment_id ) {
 			return false;
@@ -89,7 +87,7 @@ class Utilities {
 	 */
 	public function get_attachment_id_from_name( $attachment ) {
 
-		$attachment_post = new WP_Query( array(
+		$attachment_post = new \WP_Query( array(
 			'post_type'    => 'attachment',
 			'showposts'    => 1,
 			'post_status'  => 'inherit',

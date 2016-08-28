@@ -79,3 +79,5 @@ function private_media_autoloader( $class ) {
  // Register hook providers.
  plugin()->register_hooks( new Rewrites() )
  		 ->register_hooks( new Settings() );
+
+require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';

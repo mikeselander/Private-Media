@@ -1,0 +1,3 @@
+[submodule "vendor/hm-rewrite"]
+	path = vendor/hm-rewrite
+	url = git@github.com:humanmade/hm-rewrite.git

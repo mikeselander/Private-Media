@@ -48,7 +48,7 @@ class Rewrites {
 	 */
 	function get_private_dir( $path = false ) {
 
-		$dirname = 'private-files-' . Utilities::get_hash();
+		$dirname    = 'private-files-' . Utilities::get_hash();
 		$upload_dir = wp_upload_dir();
 
 		// Maybe create the directory.
@@ -77,12 +77,12 @@ class Rewrites {
 
 	function rewrite_rules() {
 
-		// hm_add_rewrite_rule( array(
-		// 	'regex' => '^content/uploads/private-files/([^*]+)/([^*]+)?$',
-		// 	'query' => 'file_id=$matches[1]&file_name=$matches[2]',
-		// 	'request_method' => 'get',
-		// 	'request_callback' => array( $this, 'rewrite_callback' )
-		// ) );
+		hm_add_rewrite_rule( array(
+			'regex' => '^content/uploads/private-files/([^*]+)/([^*]+)?$',
+			'query' => 'file_id=$matches[1]&file_name=$matches[2]',
+			'request_method' => 'get',
+			'request_callback' => array( $this, 'rewrite_callback' )
+		) );
 
 	}
 
@@ -112,11 +112,11 @@ class Rewrites {
 
 		$wp_attached_file = get_post_meta( $file_id, '_wp_attached_file', true );
 
-		if ( ( $this->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ) {
+		if ( ( $this->utilities->is_attachment_private( $file_id ) && ! is_user_logged_in() ) || empty( $wp_attached_file ) ) {
 			auth_redirect();
 		}
 
-		$uploads = wp_upload_dir();
+		$uploads   = wp_upload_dir();
 		$file_path = trailingslashit( $uploads['basedir'] ) . $wp_attached_file;
 		$mime_type = get_post_mime_type( $file_id );
 
@@ -145,10 +145,10 @@ class Rewrites {
 			$attachment = ( $query->get( 'attachment_id' ) ) ? $query->get( 'attachment_id' ) : $query->get( 'attachment' );
 
 			if ( $attachment && ! is_numeric( $attachment ) ) {
-				$attachment = $this->get_attachment_id_from_name( $attachment );
+				$attachment = $this->utilities->get_attachment_id_from_name( $attachment );
 			}
 
-			if ( $attachment && ! $this->can_user_view( $attachment ) ) {
+			if ( $attachment && ! $this->utilities->can_user_view( $attachment ) ) {
 
 				$query->set_404();
 				return $query;
@@ -157,23 +157,22 @@ class Rewrites {
 
 		}
 
-		if ( 'attachment' == $query->get( 'post_type' ) && ! $query->get( 'show_private' ) ) {
+		$attachment = ( $query->get( 'attachment_id' ) ) ? $query->get( 'attachment_id' ) : $query->get( 'attachment' );
 
-			if ( isset( $_GET['private_posts'] ) && 'private' == $_GET['private_posts']  ) {
-				$query->set( 'meta_query', array(
-					array(
-						'key'     => $this->slug . '_is_private',
-						'compare' => 'EXISTS'
-					)
-				));
-			} else {
-				$query->set( 'meta_query', array(
-					array(
-						'key'     => $this->slug . '_is_private',
-						'compare' => 'NOT EXISTS'
-					)
-				));
-			}
+		if ( ! empty( $attachment ) && $this->utilities->can_user_view( $attachment ) ) {
+			$query->set( 'meta_query', array(
+				array(
+					'key'     => $this->slug . '_is_private',
+					'compare' => 'EXISTS'
+				)
+			));
+		} else {
+			$query->set( 'meta_query', array(
+				array(
+					'key'     => $this->slug . '_is_private',
+					'compare' => 'NOT EXISTS'
+				)
+			));
 		}
 
 		return $query;

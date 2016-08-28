@@ -74,7 +74,7 @@ class Settings {
 		$uploads = wp_upload_dir();
 		$creds   = request_filesystem_credentials( add_query_arg( null, null ) );
 
-		$rewrites->get_private_dir( true );
+		$this->rewrites->get_private_dir( true );
 
 		if ( ! $creds ) {
 			// Handle Error.
@@ -88,7 +88,7 @@ class Settings {
 
 			global $wp_filesystem;
 
-			$make_private = isset( $_POST[ $this->prefix .'_is_private' ] ) && 'on' == $_POST[ $this->prefix .'_is_private' ];
+			$make_private = isset( $_POST[ $this->slug .'_is_private' ] ) && 'on' == $_POST[ $this->slug .'_is_private' ];
 
 			$new_location = null;
 
