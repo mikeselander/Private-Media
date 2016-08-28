@@ -63,7 +63,7 @@ function private_media_autoloader( $class ) {
  	return $instance;
  }
 
- // Set our definitions for later use
+ // Set our definitions for later use.
   plugin()->set_definitions(
  	(object) array(
  		'basename'	=> plugin_basename( __FILE__ ),
@@ -74,7 +74,7 @@ function private_media_autoloader( $class ) {
  	)
  );
 
- // Load HM Rewrites
+ // Load HM Rewrites.
  require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';
 
  // Register hook providers.

@@ -1,13 +1,25 @@
 <?php
+/**
+ * Small library for handling notices in the admin area.w
+ *
+ * @package WordPress
+ * @subpackage Private Media
+ */
+
 namespace PrivateMedia;
 
 class Notices {
 
+	/**
+	 * Unique ID for notices.
+	 *
+	 * @var string
+	 */
 	private $ID;
 
-	function __construct( $ID = 'mph' ) {
+	function __construct( $id = 'mph' ) {
 
-		$this->ID = 'mphan_' . $ID;
+		$this->ID = 'mphan_' . $id;
 
 		if ( ! get_option( $this->ID ) ) {
 			add_option( $this->ID, array(), null, 'no' );
@@ -29,8 +41,8 @@ class Notices {
 	 * Creates an admin notice - saved in options to be shown in the admin, until dismissed.
 	 *
 	 * @param string $new_notice Message content
-	 * @param string $type Message type - added as a class to the message when displayed. Reccommended to use: updated, error.
 	 * @param bool $display_once Display message once, or require manual dismissal.
+	 * @param string $type Message type - added as a class to the message when displayed. Reccommended to use: updated, error.
 	 */
 	public function add_notice( $message, $display_once = false, $type = 'updated' ) {
 
@@ -46,6 +58,9 @@ class Notices {
 
 	}
 
+	/**
+	 * Internal method to update or delete notice option.
+	 */
 	public function _update_notices() {
 
 		$this->admin_notices = array_filter( $this->admin_notices );
@@ -60,8 +75,6 @@ class Notices {
 
 	/**
 	 * Output all notices in the admin.
-	 *
-	 * @return null
 	 */
 	public function display_admin_notices() {
 
@@ -76,7 +89,6 @@ class Notices {
 	 * Output an individual notice.
 	 *
 	 * @param  string $notice_id The notice id (or key)
-	 * @return null
 	 */
 	private function display_admin_notice ( $notice_id ) {
 
@@ -128,9 +140,6 @@ class Notices {
 	 * Requirements:
 	 * $this->ID . '_notice_dismiss' nonce verification
 	 * value of $_GET[$this->ID . '_notice_dismiss'] si the ID of the notice to be deleted.
-	 *
-	 * @param null
-	 * @return null
 	 */
 	public function delete_notice_action() {
 

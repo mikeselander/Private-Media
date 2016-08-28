@@ -1,4 +1,11 @@
 <?php
+/**
+ * Plugin definitions setup and general hooks calls.
+ *
+ * @package WordPress
+ * @subpackage Private Media
+ */
+ 
 namespace PrivateMedia;
 
 /**
@@ -66,7 +73,7 @@ class Plugin{
 	 * @see load_plugin_textdomain
 	 */
 	public function load_textdomain() {
-	    load_plugin_textdomain( 'private-media', FALSE, basename( dirname( $this->definitions->file ) ) . '/languages/' );
+	    load_plugin_textdomain( 'private-media', false, basename( dirname( $this->definitions->file ) ) . '/languages/' );
 	}
 
 }

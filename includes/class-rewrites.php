@@ -1,9 +1,27 @@
 <?php
+/**
+ * Enable rewrites that will direct media paths to the correct locations.
+ *
+ * @package WordPress
+ * @subpackage Private Media
+ */
+
 namespace PrivateMedia;
 
 class Rewrites {
 
+	/**
+	 * Holder for Utilities class.
+	 *
+	 * @var Utilities
+	 */
 	private $utilities;
+
+	/**
+	 * Plugin slug used for settings.
+	 *
+	 * @var string
+	 */
 	private $slug;
 
 	public function __construct() {
@@ -27,7 +45,7 @@ class Rewrites {
 	/**
 	 * Set a reference to the main plugin instance.
 	 *
-	 * @param $plugin Plugin instance.
+	 * @param object $plugin Plugin instance.
 	 * @return Database instance
 	 */
 	public function set_plugin( $plugin ) {
@@ -39,7 +57,7 @@ class Rewrites {
 	}
 
 	/**
-	 * Get Private Directory URL
+	 * Get Private Directory URL.
 	 *
 	 * If $path is true return path not url.
 	 *
@@ -75,6 +93,9 @@ class Rewrites {
 
 	}
 
+	/**
+	 * Add rewrite rules to the HM Rewrites API.
+	 */
 	public function rewrite_rules() {
 
 		hm_add_rewrite_rule( array(
@@ -86,6 +107,11 @@ class Rewrites {
 
 	}
 
+	/**
+	 * Callback for HM Rewrites - tells API where to redirect request.
+	 *
+	 * @param  object $wp Query object.
+	 */
 	public function rewrite_callback( $wp ) {
 
 		if ( ! empty( $wp->query_vars['file_id'] ) ) {
@@ -96,7 +122,7 @@ class Rewrites {
 			$file_name = $wp->query_vars['file_name'];
 		}
 
-		// Legacy
+		// Legacy.
 		if ( empty( $file_id ) ) {
  			preg_match( "#(&|^)file_id=([^&$]+)#", $wp->matched_query, $file_id_matches );
 
@@ -105,7 +131,7 @@ class Rewrites {
 			}
 
 			preg_match( "#(&|^)file_name=([^&$]+)#", $wp->matched_query, $file_name_matches );
-			
+
 			if ( $file_id_matches ) {
 				$file_name = $file_name_matches[2];
 			}
@@ -140,8 +166,8 @@ class Rewrites {
 	 * Hide from any attachment query by default.
 	 * If the 'show_private' query var is set, show only private.
 	 *
-	 * @param  object $query
-	 * @return object $query
+	 * @param  object $query Query object.
+	 * @return object Query object.
 	 */
 	public function hide_private_from_query( $query ) {
 
@@ -172,8 +198,8 @@ class Rewrites {
 	 * If private return the 'public' private file url
 	 * Rewrite rule used to serve file content and 'Real' file location is obscured.
 	 *
-	 * @param  string $url
-	 * @param  int $attachment_id
+	 * @param  string $url URL to potentially rewrite.
+	 * @param  int    $attachment_id Attachment ID.
 	 * @return string file url.
 	 */
 	public function private_file_url( $url, $attachment_id ) {

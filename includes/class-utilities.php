@@ -1,25 +1,46 @@
 <?php
+/**
+ * Various utilities used throughout the plugin.
+ *
+ * @package WordPress
+ * @subpackage Private Media
+ */
+
 namespace PrivateMedia;
 
 class Utilities {
 
+	/**
+	 * Plugin definitions.
+	 *
+	 * @var Plugin
+	 */
 	private $plugin;
+
+	/**
+	 * Plugin slug used for settings.
+	 *
+	 * @var string
+	 */
 	private $slug;
-	private static $static_slug;
 
 	public function __construct() {
 		$this->slug = plugin()->get_definitions()->slug;
-		self::$static_slug = $this->slug;
 	}
 
+	/**
+	 * Set and retrieve the private folder hash.
+	 *
+	 * @return string Hash for private file folder.
+	 */
 	public static function get_hash() {
-		return apply_filters( self::$static_slug . '_hash', hash( 'md5', AUTH_KEY ) );
+		return hash( 'md5', AUTH_KEY );
 	}
 
 	/**
 	 * Check if attachment is private
 	 *
-	 * @param  int $attachment_id
+	 * @param  int $attachment_id Attachment ID.
 	 * @return boolean
 	 */
 	public function is_attachment_private( $attachment_id ) {
@@ -33,8 +54,7 @@ class Utilities {
 	 *
 	 * @todo  allow this to be filtered for more advanced use.
 	 *
-	 * @param  int $attachment_id
-	 * @param  int $user_id (if not passed, assumed current user)
+	 * @param  int $attachment_id Attachment ID.
 	 * @return boolean
 	 */
 	public function can_user_view( $attachment_id ) {
@@ -57,7 +77,7 @@ class Utilities {
 	 * Output link to file if user is logged in.
 	 * Else output a message.
 	 *
-	 * @param  array $atts shortcode attributes
+	 * @param  array $atts shortcode attributes.
 	 * @return string shortcode output.
 	 */
 	public function get_private_url( $atts ) {
@@ -81,9 +101,8 @@ class Utilities {
 	/**
 	 * Get attachment id from attachment name
 	 *
-	 * @todo  surely this isn't the best way to do this?
-	 * @param  [type] $attachment [description]
-	 * @return [type]             [description]
+	 * @param  string $attachment Attachment name.
+	 * @return int Attachment ID.
 	 */
 	public function get_attachment_id_from_name( $attachment ) {
 

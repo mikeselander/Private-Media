@@ -1,12 +1,48 @@
 <?php
+/**
+ * Enable and save settings for the plugin.
+ *
+ * @package WordPress
+ * @subpackage Private Media
+ */
+
 namespace PrivateMedia;
 
 class Settings {
 
+	/**
+	 * Hash used for private media folder.
+	 *
+	 * @var string
+	 */
 	private $hash;
+
+	/**
+	 * Holder for Utilities class.
+	 *
+	 * @var Utilities
+	 */
 	private $utilities;
+
+	/**
+	 * Holder for Rewrites class.
+	 *
+	 * @var Rewrites
+	 */
 	private $rewrites;
+
+	/**
+	 * Plugin definitions.
+	 *
+	 * @var Plugin
+	 */
 	private $plugin;
+
+	/**
+	 * Plugin slug used for settings.
+	 *
+	 * @var string
+	 */
 	private $slug;
 
 	public function __construct() {
@@ -20,12 +56,12 @@ class Settings {
 	 */
 	public function hooks() {
 
-		// Is Private Checkbox
+		// Is Private Checkbox.
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'private_attachment_field' ) , 11 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'private_attachment_field_save' ), 10, 2 );
 		add_filter( 'restrict_manage_posts', array( $this, 'filter_posts_toggle' ) );
 
-		// Styles
+		// Styles.
 		add_action( 'admin_head', array( $this, 'post_edit_style' ) );
 
 	}
@@ -33,8 +69,8 @@ class Settings {
 	/**
 	 * Set a reference to the main plugin instance.
 	 *
-	 * @param $plugin Plugin instance.
-	 * @return Database instance
+	 * @param object $plugin Plugin instance.
+	 * @return Settings instance
 	 */
 	public function set_plugin( $plugin ) {
 
@@ -68,6 +104,9 @@ class Settings {
 	 * Uses WP_Filesystem
 	 *
 	 * @todo check this out. Might need to handle edge cases.
+	 * @param object $post Post object.
+	 * @param int    $attachment Attachment ID.
+	 * @return object Post object.
 	 */
 	function private_attachment_field_save( $post, $attachment ) {
 
@@ -117,7 +156,7 @@ class Settings {
 			$old_path = trailingslashit( $uploads['basedir'] ) . $old_location;
 			$new_path = trailingslashit( $uploads['basedir'] ) . $new_location;
 
-			// Create destination
+			// Create destination.
 			if ( ! is_dir( dirname( $new_path ) ) ) {
 				wp_mkdir_p( dirname( $new_path ) );
 			}
@@ -151,8 +190,6 @@ class Settings {
 
 	/**
 	 * Output select field for filtering media by public/private.
-	 *
-	 * @return null
 	 */
 	function filter_posts_toggle() {
 
@@ -171,8 +208,6 @@ class Settings {
 
 	/**
 	 * Insert CSS into admin head on edit attachment screen fro private files.
-	 *
-	 * @return null
 	 */
 	function post_edit_style() {
 
