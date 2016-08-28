@@ -92,7 +92,7 @@ class Settings {
 		?>
 		<div class="misc-pub-section">
 			<label for="<?php echo esc_attr( $this->slug ); ?>"><input type="checkbox" id="<?php echo esc_attr( $this->slug ); ?>" name="<?php echo esc_attr( $this->slug ); ?>_is_private" <?php checked( $is_private, true ); ?> style="margin-right: 5px;"/>
-			Make this file private</label>
+			<?php esc_html_e( 'Make this file private', 'private-media' ); ?></label>
 		</div>
 		<?php
 	}
@@ -118,7 +118,7 @@ class Settings {
 		if ( ! $creds ) {
 			// Handle Error.
 			// We can't actually display the form here because this is a filter and the page redirects and it will not be shown.
-			$message = '<strong>Private Media Error</strong> WordPress is not able to write files';
+			$message = __( '<strong>Private Media Error</strong> WordPress is not able to write files', 'private-media' );
 			$this->admin_notices->add_notice( $message, false, 'error' );
 			return $post;
 		}
@@ -211,17 +211,19 @@ class Settings {
 	 */
 	function post_edit_style() {
 
-		$icon_url = trailingslashit( $this->plugin->definitions->url ) . 'assets/icon_lock.png';
-		$icon_url_2x = trailingslashit( $this->plugin->definitions->url ) . 'assets/icon_lock@2x.png';
+		// Locked
+		if ( $this->utilities->is_attachment_private( get_the_id() ) ) {
+			$lock = '\f160';
+		// Unlocked
+		} else {
+			$lock = '\f528';
+		}
 
-		if ( is_admin() && 'attachment' == get_current_screen()->id && $this->utilities->is_attachment_private( get_the_id() ) ) : ?>
+		if ( is_admin() && 'attachment' == get_current_screen()->id ) : ?>
 
 			<style>
 				#titlediv { padding-left: 60px; }
-				#titlediv::before { content: ' '; display: block; height: 26px; width: 21px; background: url(<?php echo esc_url( $icon_url ); ?>) no-repeat center center; position: relative; float: left; margin-left: -40px; top: 4px; }
-				@media only screen and ( -webkit-min-device-pixel-ratio : 1.5 ), only screen and ( min-device-pixel-ratio : 1.5 ) {
-					#titlediv::before { background-image: url(<?php echo esc_url( $icon_url_2x ); ?>); }
-				}
+				#titlediv::before { content: "<?php echo esc_attr( $lock ); ?>"; font-family: dashicons; font-size: 4em; line-height: 1; display: block; position: relative; float: left; margin-left: -60px; top: 8px; }
 			</style>
 
 		<?php endif;

@@ -78,7 +78,7 @@ class Rewrites {
 
 		if ( ! file_exists( $htaccess ) && function_exists( 'insert_with_markers' ) && is_writable( dirname( $htaccess ) ) ) {
 
-			$contents[]	= "# This .htaccess file ensures that other people cannot download your private files.\n\n";
+			$contents[]	= esc_attr__( "# This .htaccess file ensures that other people cannot download your private files.\n\n", 'private-media' );
 			$contents[] = "deny from all";
 
 			insert_with_markers( $htaccess, $this->slug, $contents );
