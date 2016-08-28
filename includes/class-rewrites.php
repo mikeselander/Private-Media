@@ -15,7 +15,7 @@ class Rewrites {
 	 */
 	public function hooks() {
 
-		add_action( 'init', array( $this, 'rewrite_rules' ) );
+		add_action( 'init', array( $this, 'rewrite_rules' ), 0, 20 );
 		add_filter( 'wp_get_attachment_url', array( $this, 'private_file_url' ), 10, 2 );
 
 		// Display private posts filter & query filter.
@@ -46,7 +46,7 @@ class Rewrites {
 	 * @param  boolean $path return path not url.
 	 * @return string path or url
 	 */
-	function get_private_dir( $path = false ) {
+	public function get_private_dir( $path = false ) {
 
 		$dirname    = 'private-files-' . Utilities::get_hash();
 		$upload_dir = wp_upload_dir();
@@ -75,18 +75,18 @@ class Rewrites {
 
 	}
 
-	function rewrite_rules() {
+	public function rewrite_rules() {
 
 		hm_add_rewrite_rule( array(
-			'regex' => '^content/uploads/private-files/([^*]+)/([^*]+)?$',
+			'regex' => '^wp-content\/uploads\/private-files\/([^*]+)\/([^*]+)?$',
 			'query' => 'file_id=$matches[1]&file_name=$matches[2]',
 			'request_method' => 'get',
-			'request_callback' => array( $this, 'rewrite_callback' )
+			'request_callback' => [ $this, 'rewrite_callback' ],
 		) );
 
 	}
 
-	function rewrite_callback( $wp ) {
+	public function rewrite_callback( $wp ) {
 
 		if ( ! empty( $wp->query_vars['file_id'] ) ) {
 			$file_id = $wp->query_vars['file_id'];
@@ -96,14 +96,19 @@ class Rewrites {
 			$file_name = $wp->query_vars['file_name'];
 		}
 
-		// Legagcy
+		// Legacy
 		if ( empty( $file_id ) ) {
  			preg_match( "#(&|^)file_id=([^&$]+)#", $wp->matched_query, $file_id_matches );
+
  			if ( $file_id_matches ) {
  				$file_id = $file_id_matches[2];
 			}
+
 			preg_match( "#(&|^)file_name=([^&$]+)#", $wp->matched_query, $file_name_matches );
+			
+			if ( $file_id_matches ) {
 				$file_name = $file_name_matches[2];
+			}
 		}
 
 		if ( ! isset( $file_id ) || isset( $file_id ) && ! $file = get_post( $file_id ) ) {
@@ -138,7 +143,7 @@ class Rewrites {
 	 * @param  object $query
 	 * @return object $query
 	 */
-	function hide_private_from_query( $query ) {
+	public function hide_private_from_query( $query ) {
 
 		if ( ! is_admin() ) {
 
@@ -157,30 +162,13 @@ class Rewrites {
 
 		}
 
-		$attachment = ( $query->get( 'attachment_id' ) ) ? $query->get( 'attachment_id' ) : $query->get( 'attachment' );
-
-		if ( ! empty( $attachment ) && $this->utilities->can_user_view( $attachment ) ) {
-			$query->set( 'meta_query', array(
-				array(
-					'key'     => $this->slug . '_is_private',
-					'compare' => 'EXISTS'
-				)
-			));
-		} else {
-			$query->set( 'meta_query', array(
-				array(
-					'key'     => $this->slug . '_is_private',
-					'compare' => 'NOT EXISTS'
-				)
-			));
-		}
-
 		return $query;
 
 	}
 
 	/**
 	 * Filter attachment url.
+	 *
 	 * If private return the 'public' private file url
 	 * Rewrite rule used to serve file content and 'Real' file location is obscured.
 	 *
@@ -188,7 +176,7 @@ class Rewrites {
 	 * @param  int $attachment_id
 	 * @return string file url.
 	 */
-	function private_file_url( $url, $attachment_id ) {
+	public function private_file_url( $url, $attachment_id ) {
 
 		if ( $this->utilities->is_attachment_private( $attachment_id ) ) {
 

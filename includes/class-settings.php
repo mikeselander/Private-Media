@@ -176,8 +176,8 @@ class Settings {
 	 */
 	function post_edit_style() {
 
-		$icon_url = trailingslashit( plugin_dir_url( __FILE__ ) ) . 'assets/icon_lock.png';
-		$icon_url_2x = trailingslashit( plugin_dir_url( __FILE__ ) ) . 'assets/icon_lock@2x.png';
+		$icon_url = trailingslashit( $this->plugin->definitions->url ) . 'assets/icon_lock.png';
+		$icon_url_2x = trailingslashit( $this->plugin->definitions->url ) . 'assets/icon_lock@2x.png';
 
 		if ( is_admin() && 'attachment' == get_current_screen()->id && $this->utilities->is_attachment_private( get_the_id() ) ) : ?>
 

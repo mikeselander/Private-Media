@@ -48,8 +48,6 @@ function private_media_autoloader( $class ) {
  }
  spl_autoload_register( __NAMESPACE__ . '\private_media_autoloader' );
 
-
-
  /**
   * Retrieve the plugin instance.
   *
@@ -76,8 +74,9 @@ function private_media_autoloader( $class ) {
  	)
  );
 
+ // Load HM Rewrites
+ require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';
+
  // Register hook providers.
  plugin()->register_hooks( new Rewrites() )
  		 ->register_hooks( new Settings() );
-
-require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';
