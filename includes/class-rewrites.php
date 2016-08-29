@@ -39,6 +39,9 @@ class Rewrites {
 		// Display private posts filter & query filter.
 		add_filter( 'pre_get_posts', array( $this, 'hide_private_from_query' ) );
 
+		// Re-direct from attachment singles if is private
+		add_action( 'template_redirect', array( $this, 'redirect_attachment_single' ) );
+
 
 	}
 
@@ -213,6 +216,17 @@ class Rewrites {
 
 		return $url;
 
+	}
+
+	/**
+	 * Redirect logged-out users from attachment pages if attachment is private.
+	 *
+	 * Hooked into template_redirect action.
+	 */
+	public function redirect_attachment_single() {
+		if ( ! is_user_logged_in() && is_singular( 'attachment' ) && $this->utilities->is_attachment_private( get_queried_object_id() ) ) {
+			auth_redirect();
+		}
 	}
 
 }
