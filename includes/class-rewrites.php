@@ -41,7 +41,6 @@ class Rewrites {
 
 		// Re-direct from attachment singles if is private
 		add_action( 'template_redirect', array( $this, 'redirect_attachment_single' ) );
-
 	}
 
 	/**
@@ -54,8 +53,8 @@ class Rewrites {
 
 		$this->plugin = $plugin;
 		$this->slug   = $this->plugin->definitions->slug;
-		return $this;
 
+		return $this;
 	}
 
 	/**
@@ -92,7 +91,6 @@ class Rewrites {
 		}
 
 		return trailingslashit( $upload_dir['baseurl'] ) . $dirname;
-
 	}
 
 	/**
@@ -106,7 +104,6 @@ class Rewrites {
 			'request_method' => 'get',
 			'request_callback' => [ $this, 'rewrite_callback' ],
 		) );
-
 	}
 
 	/**
@@ -126,7 +123,7 @@ class Rewrites {
 
 		// Legacy.
 		if ( empty( $file_id ) ) {
- 			preg_match( '#(&|^)file_id=([^&$]+)#', $wp->matched_query, $file_id_matches );
+			preg_match( '#(&|^)file_id=([^&$]+)#', $wp->matched_query, $file_id_matches );
 
 			if ( $file_id_matches ) {
 				$file_id = $file_id_matches[2];
@@ -158,7 +155,6 @@ class Rewrites {
 		header( 'Content-Length: ' . filesize( $file_path ) );
 		fpassthru( $file );
 		exit;
-
 	}
 
 	/**
@@ -190,7 +186,6 @@ class Rewrites {
 		}
 
 		return $query;
-
 	}
 
 	/**
@@ -213,7 +208,6 @@ class Rewrites {
 		}
 
 		return $url;
-
 	}
 
 	/**
@@ -222,6 +216,7 @@ class Rewrites {
 	 * Hooked into template_redirect action.
 	 */
 	public function redirect_attachment_single() {
+
 		if ( ! is_user_logged_in() && is_singular( 'attachment' ) && $this->utilities->is_attachment_private( get_queried_object_id() ) ) {
 			auth_redirect();
 		}

@@ -48,11 +48,11 @@ function private_media_autoloader( $class ) {
 }
 spl_autoload_register( __NAMESPACE__ . '\private_media_autoloader' );
 
- /**
-  * Retrieve the plugin instance.
-  *
-  * @return object Plugin
-  */
+/**
+ * Retrieve the plugin instance.
+ *
+ * @return object Plugin
+ */
 function plugin() {
 	static $instance;
 
@@ -70,7 +70,8 @@ plugin()->set_definitions(
 		'directory'	=> plugin_dir_path( __FILE__ ),
 		'file'      => __FILE__,
 		'slug'      => 'private-media',
-		'url'       => plugin_dir_url( __FILE__ )
+		'url'       => plugin_dir_url( __FILE__ ),
+		'version'   => '1.0',
 	)
 );
 
@@ -79,4 +80,4 @@ require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rew
 
 // Register hook providers.
 plugin()->register_hooks( new Rewrites() )
-		 ->register_hooks( new Settings() );
+		->register_hooks( new Settings() );

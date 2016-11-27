@@ -34,7 +34,6 @@ class Notices {
 		add_action( 'admin_notices', array( $this, 'display_admin_notices' ) );
 
 		add_action( 'shutdown', array( $this, '_update_notices' ) );
-
 	}
 
 	/**
@@ -55,7 +54,6 @@ class Notices {
 		if ( ! in_array( $notice , $this->admin_notices ) ) {
 			$this->admin_notices[ uniqid() ] = $notice;
 		}
-
 	}
 
 	/**
@@ -70,7 +68,6 @@ class Notices {
 		} else {
 			update_option( $this->ID, $this->admin_notices );
 		}
-
 	}
 
 	/**
@@ -82,7 +79,6 @@ class Notices {
 		foreach ( array_keys( $this->admin_notices ) as $notice_id ) {
 			$this->display_admin_notice( $notice_id );
 		}
-
 	}
 
 	/**
@@ -105,7 +101,7 @@ class Notices {
 				<?php echo wp_kses_post( $notice['message'] ); ?>
 
 				<?php if ( empty( $notice['display_once'] ) ) : ?>
-					<a class="button" style="margin-left: 10px; color: inherit; text-decoration: none;" href="<?php echo wp_nonce_url( add_query_arg( $this->ID . '_notice_dismiss', $notice_id ), $this->ID . '_notice_dismiss' ); ?>"><?php esc_html_e( 'Dismiss', 'private-media' ); ?></a>
+					<a class="button" style="margin-left: 10px; color: inherit; text-decoration: none;" href="<?php echo esc_url( wp_nonce_url( add_query_arg( $this->ID . '_notice_dismiss', $notice_id ), $this->ID . '_notice_dismiss' ) ); ?>"><?php esc_html_e( 'Dismiss', 'private-media' ); ?></a>
 				<?php endif; ?>
 
 			</p>
@@ -117,21 +113,18 @@ class Notices {
 		if ( $notice['display_once'] ) {
 			$this->unset_admin_notice( $notice_id );
 		}
-
 	}
 
 	/**
 	 * Remove an admin notice by key from $this->admin_notices
 	 *
 	 * @param  string $notice_id Notice ID (or key)
-	 * @return null
 	 */
 	private function unset_admin_notice( $notice_id ) {
 
 		if ( array_key_exists( $notice_id, $this->admin_notices ) ) {
 			unset( $this->admin_notices[ $notice_id ] );
 		}
-
 	}
 
 	/**
@@ -139,15 +132,14 @@ class Notices {
 	 *
 	 * Requirements:
 	 * $this->ID . '_notice_dismiss' nonce verification
-	 * value of $_GET[$this->ID . '_notice_dismiss'] si the ID of the notice to be deleted.
+	 * value of $_GET[$this->ID . '_notice_dismiss'] is the ID of the notice to be deleted.
 	 */
 	public function delete_notice_action() {
 
-		if ( ! wp_verify_nonce( $_GET['_wpnonce'], $this->ID . '_notice_dismiss' ) ) {
+		if ( ! wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), $this->ID . '_notice_dismiss' ) ) {
 			return;
 		}
 
-		$this->unset_admin_notice( $_GET[ $this->ID . '_notice_dismiss' ] );
-
+		$this->unset_admin_notice( sanitize_text_field( $_GET[ $this->ID . '_notice_dismiss' ] ) );
 	}
 }

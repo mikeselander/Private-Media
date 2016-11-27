@@ -44,15 +44,11 @@ class Utilities {
 	 * @return boolean
 	 */
 	public function is_attachment_private( $attachment_id ) {
-
 		return get_post_meta( $attachment_id, $this->slug . '_is_private', true );
-
 	}
 
 	/**
 	 * Check if current user can view attachment
-	 *
-	 * @todo  allow this to be filtered for more advanced use.
 	 *
 	 * @param  int $attachment_id Attachment ID.
 	 * @return boolean
@@ -63,9 +59,18 @@ class Utilities {
 			return false;
 		}
 
+		// Check if attachment is private or not.
 		$private_status = $this->is_attachment_private( $attachment_id );
 
-		if ( ! empty( $private_status ) && ! is_user_logged_in() ) {
+		/**
+		 * Filter what capability is required to view the attachment.
+		 *
+		 * @param string $capability Minimum capability to read attachment.
+		 * @param int    $attachment_id Current attachment ID.
+		 */
+		$capability = apply_filter( 'private-media-capability', 'read', $attachment_id );
+
+		if ( ! empty( $private_status ) && ! current_user_can( $capability ) ) {
 			return false;
 		}
 
@@ -106,19 +111,32 @@ class Utilities {
 	 */
 	public function get_attachment_id_from_name( $attachment ) {
 
-		$attachment_post = new \WP_Query( array(
-			'post_type'    => 'attachment',
-			'showposts'    => 1,
-			'post_status'  => 'inherit',
-			'name'         => $attachment,
-			'show_private' => true,
-		) );
+		// Check for a cached ID before running a new query.
+		$attachment_id = wp_cache_get( md5( 'private-media-attachment-id-' . $attachment ) );
 
-		if ( empty( $attachment_post->posts ) ) {
-			return;
+		if ( ! $attachment_id ) {
+
+			$attachment_post = new \WP_Query( array(
+				'post_type'     => 'attachment',
+				'showposts'     => 1,
+				'post_status'   => 'inherit',
+				'name'          => $attachment,
+				'show_private'  => true,
+				'no_found_rows' => true,
+			) );
+
+			if ( empty( $attachment_post->posts ) ) {
+				return;
+			}
+
+			$attachment_id = reset( $attachment_post->posts )->ID;
+
+			// Set a new cache object for this attachment ID.
+			wp_cache_set( md5( 'private-media-attachment-id-' . $attachment ), $attachment_id, MONTH_IN_SECONDS );
+
 		}
 
-		return reset( $attachment_post->posts )->ID;
+		return $attachment_id;
 
 	}
 }

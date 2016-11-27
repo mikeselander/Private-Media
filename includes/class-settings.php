@@ -46,6 +46,7 @@ class Settings {
 	private $slug;
 
 	public function __construct() {
+		
 		$this->hash      = Utilities::get_hash();
 		$this->utilities = new Utilities;
 		$this->rewrites  = new Rewrites;
@@ -62,7 +63,6 @@ class Settings {
 
 		// Styles.
 		add_action( 'admin_head', array( $this, 'post_edit_style' ) );
-
 	}
 
 	/**
@@ -75,8 +75,8 @@ class Settings {
 
 		$this->plugin = $plugin;
 		$this->slug   = $this->plugin->definitions->slug;
-		return $this;
 
+		return $this;
 	}
 
 	/**
@@ -136,7 +136,6 @@ class Settings {
 				if ( $old_location && false === strpos( $old_location, 'private-files-' . $this->hash ) ) {
 					$new_location = 'private-files-' . $this->hash . '/' . $old_location;
 				}
-
 			} else {
 
 				// Update location of file in meta.
@@ -184,7 +183,6 @@ class Settings {
 		}
 
 		return $post;
-
 	}
 
 	/**
@@ -207,6 +205,5 @@ class Settings {
 			</style>
 
 		<?php endif;
-
 	}
 }

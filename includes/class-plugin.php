@@ -15,7 +15,7 @@ namespace PrivateMedia;
  * @subpackage Evans
  * @author     Old Town Media
  */
-class Plugin{
+class Plugin {
 
 	/**
 	 * Plugin definitions.
