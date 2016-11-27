@@ -111,7 +111,7 @@ class Utilities {
 			'showposts'    => 1,
 			'post_status'  => 'inherit',
 			'name'         => $attachment,
-			'show_private' => true
+			'show_private' => true,
 		) );
 
 		if ( empty( $attachment_post->posts ) ) {

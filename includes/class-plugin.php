@@ -5,7 +5,7 @@
  * @package WordPress
  * @subpackage Private Media
  */
- 
+
 namespace PrivateMedia;
 
 /**
@@ -24,7 +24,6 @@ class Plugin{
 	 */
 	public $definitions;
 
-
 	/**
 	 * Retrieve the plugin definitions from the main plugin directory.
 	 *
@@ -33,7 +32,6 @@ class Plugin{
 	public function get_definitions() {
 		return $this->definitions;
 	}
-
 
 	/**
 	 * Set the plugin definitions.
@@ -47,7 +45,6 @@ class Plugin{
 		return $this;
 
 	}
-
 
 	/**
 	 * Register hook function.
@@ -66,7 +63,6 @@ class Plugin{
 
 	}
 
-
 	/**
 	 * Load the textdomain for this plugin if translation is available
 	 *
@@ -75,5 +71,4 @@ class Plugin{
 	public function load_textdomain() {
 	    load_plugin_textdomain( 'private-media', false, basename( dirname( $this->definitions->file ) ) . '/languages/' );
 	}
-
 }

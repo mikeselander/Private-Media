@@ -23,60 +23,60 @@ namespace PrivateMedia;
 function private_media_autoloader( $class ) {
 	$namespace = explode( '\\', $class );
 
- 	if ( __NAMESPACE__ !== $namespace[0] ) {
- 		return;
- 	}
+	if ( __NAMESPACE__ !== $namespace[0] ) {
+		return;
+	}
 
-    $class = str_replace( __NAMESPACE__ . '\\', '', $class );
+	$class = str_replace( __NAMESPACE__ . '\\', '', $class );
 
 	$nss = array(
 		'Views'
 	);
 
 	if ( in_array( $namespace[1], $nss ) ) {
-        $class = strtolower( preg_replace( '/(?<!^)([A-Z])/', '/\1', $class ) );
-        $class = str_replace( '\\', '', $class );
-     	$file  = dirname( __FILE__ ) . '/' . $class . '.php';
-    } else {
-        $class = strtolower( preg_replace( '/(?<!^)([A-Z])/', '-\\1', $class ) );
-     	$file  = dirname( __FILE__ ) . '/includes/class-' . $class . '.php';
-    }
+		$class = strtolower( preg_replace( '/(?<!^)([A-Z])/', '/\1', $class ) );
+		$class = str_replace( '\\', '', $class );
+		$file  = dirname( __FILE__ ) . '/' . $class . '.php';
+	} else {
+		$class = strtolower( preg_replace( '/(?<!^)([A-Z])/', '-\\1', $class ) );
+		$file  = dirname( __FILE__ ) . '/includes/class-' . $class . '.php';
+	}
 
- 	if ( is_readable( $file ) ) {
- 		require_once( $file );
- 	}
- }
- spl_autoload_register( __NAMESPACE__ . '\private_media_autoloader' );
+	if ( is_readable( $file ) ) {
+		require_once( $file );
+	}
+}
+spl_autoload_register( __NAMESPACE__ . '\private_media_autoloader' );
 
  /**
   * Retrieve the plugin instance.
   *
   * @return object Plugin
   */
- function plugin() {
- 	static $instance;
+function plugin() {
+	static $instance;
 
- 	if ( null === $instance ) {
- 		$instance = new Plugin();
- 	}
+	if ( null === $instance ) {
+		$instance = new Plugin();
+	}
 
- 	return $instance;
- }
+	return $instance;
+}
 
- // Set our definitions for later use.
-  plugin()->set_definitions(
- 	(object) array(
- 		'basename'	=> plugin_basename( __FILE__ ),
- 		'directory'	=> plugin_dir_path( __FILE__ ),
- 		'file'		=> __FILE__,
- 		'slug' 		=> 'private-media',
- 		'url'		=> plugin_dir_url( __FILE__ )
- 	)
- );
+// Set our definitions for later use.
+plugin()->set_definitions(
+	(object) array(
+		'basename'  => plugin_basename( __FILE__ ),
+		'directory'	=> plugin_dir_path( __FILE__ ),
+		'file'      => __FILE__,
+		'slug'      => 'private-media',
+		'url'       => plugin_dir_url( __FILE__ )
+	)
+);
 
- // Load HM Rewrites.
- require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';
+// Load HM Rewrites.
+require_once plugin()->get_definitions()->directory . '/vendor/hm-rewrite/hm-rewrites.php';
 
- // Register hook providers.
- plugin()->register_hooks( new Rewrites() )
- 		 ->register_hooks( new Settings() );
+// Register hook providers.
+plugin()->register_hooks( new Rewrites() )
+		 ->register_hooks( new Settings() );

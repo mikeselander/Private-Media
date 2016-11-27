@@ -42,7 +42,6 @@ class Rewrites {
 		// Re-direct from attachment singles if is private
 		add_action( 'template_redirect', array( $this, 'redirect_attachment_single' ) );
 
-
 	}
 
 	/**
@@ -81,8 +80,8 @@ class Rewrites {
 
 		if ( ! file_exists( $htaccess ) && function_exists( 'insert_with_markers' ) && is_writable( dirname( $htaccess ) ) ) {
 
-			$contents[]	= esc_attr__( "# This .htaccess file ensures that other people cannot download your private files.\n\n", 'private-media' );
-			$contents[] = "deny from all";
+			$contents[]	= esc_attr__( '# This .htaccess file ensures that other people cannot download your private files.\n\n', 'private-media' );
+			$contents[] = 'deny from all';
 
 			insert_with_markers( $htaccess, $this->slug, $contents );
 
@@ -127,13 +126,13 @@ class Rewrites {
 
 		// Legacy.
 		if ( empty( $file_id ) ) {
- 			preg_match( "#(&|^)file_id=([^&$]+)#", $wp->matched_query, $file_id_matches );
+ 			preg_match( '#(&|^)file_id=([^&$]+)#', $wp->matched_query, $file_id_matches );
 
- 			if ( $file_id_matches ) {
- 				$file_id = $file_id_matches[2];
+			if ( $file_id_matches ) {
+				$file_id = $file_id_matches[2];
 			}
 
-			preg_match( "#(&|^)file_name=([^&$]+)#", $wp->matched_query, $file_name_matches );
+			preg_match( '#(&|^)file_name=([^&$]+)#', $wp->matched_query, $file_name_matches );
 
 			if ( $file_id_matches ) {
 				$file_name = $file_name_matches[2];
@@ -188,7 +187,6 @@ class Rewrites {
 				return $query;
 
 			}
-
 		}
 
 		return $query;
@@ -228,5 +226,4 @@ class Rewrites {
 			auth_redirect();
 		}
 	}
-
 }

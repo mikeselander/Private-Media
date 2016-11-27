@@ -49,7 +49,7 @@ class Notices {
 		$notice = array(
 			'message'      => $message,
 			'type'         => $type,
-			'display_once' => $display_once
+			'display_once' => $display_once,
 		);
 
 		if ( ! in_array( $notice , $this->admin_notices ) ) {
@@ -90,7 +90,7 @@ class Notices {
 	 *
 	 * @param  string $notice_id The notice id (or key)
 	 */
-	private function display_admin_notice ( $notice_id ) {
+	private function display_admin_notice( $notice_id ) {
 
 		if ( ! $notice = $this->admin_notices[ $notice_id ] ) {
 			return;
@@ -105,7 +105,7 @@ class Notices {
 				<?php echo wp_kses_post( $notice['message'] ); ?>
 
 				<?php if ( empty( $notice['display_once'] ) ) : ?>
-					<a class="button" style="margin-left: 10px; color: inherit; text-decoration: none;" href="<?php echo wp_nonce_url( add_query_arg( $this->ID . '_notice_dismiss', $notice_id ), $this->ID . '_notice_dismiss' ); ?>">Dismiss</a>
+					<a class="button" style="margin-left: 10px; color: inherit; text-decoration: none;" href="<?php echo wp_nonce_url( add_query_arg( $this->ID . '_notice_dismiss', $notice_id ), $this->ID . '_notice_dismiss' ); ?>"><?php esc_html_e( 'Dismiss', 'private-media' ); ?></a>
 				<?php endif; ?>
 
 			</p>
@@ -150,5 +150,4 @@ class Notices {
 		$this->unset_admin_notice( $_GET[ $this->ID . '_notice_dismiss' ] );
 
 	}
-
 }

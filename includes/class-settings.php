@@ -133,8 +133,9 @@ class Settings {
 			if ( $make_private ) {
 
 				$old_location = get_post_meta( $post['ID'], '_wp_attached_file', true );
-				if ( $old_location && false === strpos( $old_location, 'private-files-' . $this->hash ) )
+				if ( $old_location && false === strpos( $old_location, 'private-files-' . $this->hash ) ) {
 					$new_location = 'private-files-' . $this->hash . '/' . $old_location;
+				}
 
 			} else {
 
@@ -143,7 +144,6 @@ class Settings {
 				if ( $old_location && false !== strpos( $old_location, 'private-files-' . $this->hash ) ) {
 					$new_location = str_replace( 'private-files-' . $this->hash . '/', '', $old_location );
 				}
-
 			}
 
 			$metadata = get_post_meta( $post['ID'], '_wp_attachment_metadata', true );
@@ -178,7 +178,7 @@ class Settings {
 
 			update_post_meta( $post['ID'], '_wp_attached_file', $new_location );
 
-			$metadata['file' ] = $new_location;
+			$metadata['file'] = $new_location;
 			update_post_meta( $post['ID'], '_wp_attachment_metadata', $metadata );
 
 		}
@@ -195,7 +195,6 @@ class Settings {
 		// Locked
 		if ( $this->utilities->is_attachment_private( get_the_id() ) ) {
 			$lock = '\f160';
-		// Unlocked
 		} else {
 			$lock = '\f528';
 		}
